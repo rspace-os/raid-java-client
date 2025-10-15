@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RaIDServicePoint {
 
-  public Long id;
+  public Integer id;
   public String name;
   public String identifierOwner;
   public String repositoryId;
