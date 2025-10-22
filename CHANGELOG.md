@@ -2,8 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.0]
+## [2.0.0]
+- Implements Auth2.0 methods and changed the facade (breaking change)
 
+## [1.0.0]
 - First version of the RaID java client
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),

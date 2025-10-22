@@ -1,21 +1,29 @@
 package com.researchspace.raid.client;
 
 
+import static java.net.URLEncoder.encode;
+
 import com.researchspace.raid.model.RaID;
 import com.researchspace.raid.model.RaIDServicePoint;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
@@ -23,22 +31,18 @@ import org.springframework.web.client.RestTemplate;
 @Data
 public class RaIDClientImpl implements RaIDClient {
 
-  @Value("${raid.api.url}")
-  private String raidBaseUrl;
-
   private RestTemplate restTemplate;
-
 
   public RaIDClientImpl() {
     restTemplate = new RestTemplate();
   }
 
   @Override
-  public Set<RaIDServicePoint> getServicePointList(String accessToken)
+  public Set<RaIDServicePoint> getServicePointList(String instanceBaseUrl, String accessToken)
       throws HttpServerErrorException {
     return new HashSet<>(Arrays.asList(Objects.requireNonNull(restTemplate
         .exchange(
-            raidBaseUrl + "/service-point/",
+            instanceBaseUrl + "/service-point/",
             HttpMethod.GET,
             new HttpEntity<>(createHttpHeaders(accessToken)),
             RaIDServicePoint[].class)
@@ -46,11 +50,12 @@ public class RaIDClientImpl implements RaIDClient {
   }
 
   @Override
-  public RaIDServicePoint getServicePoint(String accessToken, Integer servicePointId)
+  public RaIDServicePoint getServicePoint(String instanceBaseUrl, String accessToken,
+      Integer servicePointId)
       throws HttpServerErrorException {
     return restTemplate
         .exchange(
-            raidBaseUrl + "/service-point/" + servicePointId,
+            instanceBaseUrl + "/service-point/" + servicePointId,
             HttpMethod.GET,
             new HttpEntity<>(createHttpHeaders(accessToken)),
             RaIDServicePoint.class)
@@ -58,10 +63,11 @@ public class RaIDClientImpl implements RaIDClient {
   }
 
   @Override
-  public Set<RaID> getRaidList(String accessToken) throws HttpServerErrorException {
+  public Set<RaID> getRaIDList(String instanceBaseUrl, String accessToken)
+      throws HttpServerErrorException {
     return new HashSet<>(Arrays.asList(Objects.requireNonNull(restTemplate
         .exchange(
-            raidBaseUrl + "/raid/",
+            instanceBaseUrl + "/raid/",
             HttpMethod.GET,
             new HttpEntity<>(createHttpHeaders(accessToken)),
             RaID[].class)
@@ -69,19 +75,82 @@ public class RaIDClientImpl implements RaIDClient {
   }
 
   @Override
-  public RaID getRaid(String accessToken, String raidPrefix, String raidSuffix) throws HttpServerErrorException {
+  public RaID getRaID(String instanceBaseUrl, String accessToken, String raidPrefix,
+      String raidSuffix) throws HttpServerErrorException {
     return restTemplate
         .exchange(
-            raidBaseUrl + "/raid/" + raidPrefix + "/" + raidSuffix,
+            instanceBaseUrl + "/raid/" + raidPrefix + "/" + raidSuffix,
             HttpMethod.GET,
             new HttpEntity<>(createHttpHeaders(accessToken)),
             RaID.class)
-        .getBody();  }
+        .getBody();
+  }
 
-  private static HttpHeaders createHttpHeaders(String shortLivedToken) {
+  @Override
+  public String getRedirectUriToConnect(String authBaseUrl, String clientId, String redirectUri,
+      String serverAlias) throws HttpServerErrorException, URISyntaxException {
+
+    String pathAndQuery =
+        String.format(
+            "?client_id=%s&redirect_uri=%s&response_type=code&scope=openid&state=%s",
+            encode(clientId, StandardCharsets.UTF_8),
+            encode(redirectUri, StandardCharsets.UTF_8),
+            encode(serverAlias, StandardCharsets.UTF_8));
+    return new URI(authBaseUrl + "/auth" + pathAndQuery)
+        .normalize()
+        .toString();
+
+  }
+
+  @Override
+  public String getAccessToken(String authBaseUrl, String clientId, String clientSecret,
+      String authorizationCode, String redirectUri)
+      throws HttpServerErrorException, URISyntaxException {
+
+    MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+    formData.add("grant_type", "authorization_code");
+    formData.add("code", authorizationCode);
+
+    return getAccessToken(authBaseUrl + "/token", clientId, clientSecret, redirectUri,
+        formData);
+
+  }
+
+  @Override
+  public String getRefreshToken(String authBaseUrl, String clientId, String clientSecret,
+      String refreshToken, String redirectUri)
+      throws HttpServerErrorException, URISyntaxException {
+
+    MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+    formData.add("grant_type", "refresh_token");
+    formData.add("refresh_token", refreshToken);
+
+    return getAccessToken(authBaseUrl + "/token", clientId, clientSecret, redirectUri,
+        formData);
+  }
+
+  private String getAccessToken(String url, String clientId, String clientSecret,
+      String redirectUri, MultiValueMap<String, String> formData)
+      throws HttpStatusCodeException, URISyntaxException {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Type", "application/x-www-form-urlencoded");
+    headers.add("Accept", "*/*");
+    headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+
+    formData.add("client_id", clientId);
+    formData.add("client_secret", clientSecret);
+    formData.add("redirect_uri", new URI(redirectUri).normalize().toString());
+    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(formData, headers);
+
+    return restTemplate.exchange(url, HttpMethod.POST, request, String.class).getBody();
+  }
+
+
+  private static HttpHeaders createHttpHeaders(String accessToken) {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
-    headers.add("Authorization", String.format("Bearer %s", shortLivedToken));
+    headers.add("Authorization", String.format("Bearer %s", accessToken));
     return headers;
   }
+
 }
