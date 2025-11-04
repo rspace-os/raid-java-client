@@ -19,7 +19,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 
 @Disabled("We leave the test Disabled so we can potentially run it "
-    + "manually by pasting the bearer token here below")
+    + "manually by pasting the CLIENT_ID, CLIENT_SECRET, "
+    + "and AUTHORIZATION_CODE (or ACCESS_TOKEN if running single tests)")
 @TestMethodOrder(OrderAnnotation.class)
 public class RaIDClientRealConnectionTest {
 
@@ -29,8 +30,8 @@ public class RaIDClientRealConnectionTest {
   private static String ACCESS_TOKEN = "______PASTE_ACCESS_TOKEN_TO_RUN_ONLY_API_TESTS_____";
   private static String REFRESH_TOKEN = "";
   private final String AUTHORIZATION_CODE = "______PASTE_AUTHORIZATION_CODE_HERE_TO_RUN_ALL_SUITE_____";
-  private static final String CLIENT_ID = "rspace";
-  private static final String CLIENT_SECRET = "HTKkDrRjNbNb6z4YyLCj2EQOfE0m5lvw";
+  private static final String CLIENT_ID = "___PASTE_CLIENT_ID___";
+  private static final String CLIENT_SECRET = "___PASTE_CLIENT_SECRET___";
   private static final String REDIRECT_URI = "https://researchspace.eu.ngrok.io/apps/raid/callback";
   private static final String RAID_PREFIX = "10.83334";
   private static final String RAID_SUFFIX = "c74980b1";

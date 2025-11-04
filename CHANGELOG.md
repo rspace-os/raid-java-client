@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [2.0.0]
-- Implements Auth2.0 methods and changed the facade (breaking change)
+- Implements OAuth2.0 methods and changed the facade (breaking change)
 
 ## [1.0.0]
 - First version of the RaID java client
