@@ -3,11 +3,13 @@ package com.researchspace.raid.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@EqualsAndHashCode(of = {"id"})
 public class RaIDIdentifier {
 
   private String id;
@@ -23,6 +25,10 @@ public class RaIDIdentifier {
 
   @JsonIgnore
   private String suffix;
+
+  public RaIDIdentifier(String identifier){
+    this.id = identifier;
+  }
 
   public String getPrefix() {
     String[] urlSplit = this.getId().split("/");
