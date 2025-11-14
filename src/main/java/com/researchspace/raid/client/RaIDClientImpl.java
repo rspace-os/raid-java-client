@@ -9,10 +9,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -38,15 +36,15 @@ public class RaIDClientImpl implements RaIDClient {
   }
 
   @Override
-  public Set<RaIDServicePoint> getServicePointList(String instanceBaseUrl, String accessToken)
+  public List<RaIDServicePoint> getServicePointList(String instanceBaseUrl, String accessToken)
       throws HttpServerErrorException {
-    return new HashSet<>(Arrays.asList(Objects.requireNonNull(restTemplate
+    return Arrays.asList(Objects.requireNonNull(restTemplate
         .exchange(
             instanceBaseUrl + "/service-point/",
             HttpMethod.GET,
             new HttpEntity<>(createHttpHeaders(accessToken)),
             RaIDServicePoint[].class)
-        .getBody())));
+        .getBody()));
   }
 
   @Override
@@ -63,15 +61,15 @@ public class RaIDClientImpl implements RaIDClient {
   }
 
   @Override
-  public Set<RaID> getRaIDList(String instanceBaseUrl, String accessToken)
+  public List<RaID> getRaIDList(String instanceBaseUrl, String accessToken)
       throws HttpServerErrorException {
-    return new HashSet<>(Arrays.asList(Objects.requireNonNull(restTemplate
+    return Arrays.asList(Objects.requireNonNull(restTemplate
         .exchange(
             instanceBaseUrl + "/raid/",
             HttpMethod.GET,
             new HttpEntity<>(createHttpHeaders(accessToken)),
             RaID[].class)
-        .getBody())));
+        .getBody()));
   }
 
   @Override

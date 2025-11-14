@@ -4,11 +4,10 @@ package com.researchspace.raid.client;
 import com.researchspace.raid.model.RaID;
 import com.researchspace.raid.model.RaIDServicePoint;
 import java.net.URISyntaxException;
-import java.util.Set;
+import java.util.List;
 import org.springframework.web.client.HttpServerErrorException;
 
 public interface RaIDClient {
-
 
   /***
    * Calls the RAiD end point to receive the list of the Service Points
@@ -19,7 +18,7 @@ public interface RaIDClient {
    * @return a Set of Service Point
    * @throws HttpServerErrorException
    */
-  Set<RaIDServicePoint> getServicePointList(String apiBaseUrl, String accessToken)
+  List<RaIDServicePoint> getServicePointList(String apiBaseUrl, String accessToken)
       throws HttpServerErrorException;
 
 
@@ -47,7 +46,7 @@ public interface RaIDClient {
    * @return the Set of RAiD associated to the current user
    * @throws HttpServerErrorException
    */
-  Set<RaID> getRaIDList(String apiBaseUrl, String accessToken) throws HttpServerErrorException;
+  List<RaID> getRaIDList(String apiBaseUrl, String accessToken) throws HttpServerErrorException;
 
 
   /***
