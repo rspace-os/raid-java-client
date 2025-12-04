@@ -9,7 +9,7 @@ import com.researchspace.raid.model.RaID;
 import com.researchspace.raid.model.RaIDServicePoint;
 import com.researchspace.raid.model.TestAccessToken;
 import java.net.URISyntaxException;
-import java.util.Set;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -76,7 +76,7 @@ public class RaIDClientRealConnectionTest {
   @Test
   @Order(3)
   public void testGetServicePointList() {
-    Set<RaIDServicePoint> result = raidClientImpl.getServicePointList(API_BASE_URL,
+    List<RaIDServicePoint> result = raidClientImpl.getServicePointList(API_BASE_URL,
         ACCESS_TOKEN);
     assertNotNull(result);
   }
@@ -92,7 +92,7 @@ public class RaIDClientRealConnectionTest {
   @Test
   @Order(5)
   public void testGetRaidList() {
-    Set<RaID> result = raidClientImpl.getRaIDList(API_BASE_URL, ACCESS_TOKEN);
+    List<RaID> result = raidClientImpl.getRaIDList(API_BASE_URL, ACCESS_TOKEN);
     assertNotNull(result);
   }
 

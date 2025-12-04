@@ -20,8 +20,8 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,7 +65,7 @@ class RaIDClientTest {
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(jsonServicePointList, MediaType.APPLICATION_JSON));
 
-    Set<RaIDServicePoint> servicePointList = raidClient.getServicePointList(INSTANCE_BASE_URL,
+    List<RaIDServicePoint> servicePointList = raidClient.getServicePointList(INSTANCE_BASE_URL,
         ACCESS_TOKEN);
     assertNotNull(servicePointList);
     assertEquals(36, servicePointList.size());
@@ -107,7 +107,7 @@ class RaIDClientTest {
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(jsonRaidList, MediaType.APPLICATION_JSON));
 
-    Set<RaID> raidList = raidClient.getRaIDList(INSTANCE_BASE_URL, ACCESS_TOKEN);
+    List<RaID> raidList = raidClient.getRaIDList(INSTANCE_BASE_URL, ACCESS_TOKEN);
     assertNotNull(raidList);
     assertEquals(2, raidList.size());
     assertTrue(raidList.contains(rspaceRaid1));
