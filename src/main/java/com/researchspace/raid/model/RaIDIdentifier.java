@@ -5,15 +5,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@EqualsAndHashCode(of = {"id"})
-public class RaIDIdentifier {
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class RaIDIdentifier extends RaIDBriefIdentifier {
 
-  private String id;
-  private String schemaUri;
   private RaIDRegistrationAgency registrationAgency;
   private RaIDOwner owner;
   private String raidAgencyUrl;
@@ -27,7 +27,7 @@ public class RaIDIdentifier {
   private String suffix;
 
   public RaIDIdentifier(String identifier){
-    this.id = identifier;
+    super(identifier);
   }
 
   public String getPrefix() {

@@ -16,6 +16,7 @@ public class RaID {
   private RaIDIdentifier identifier;
   private RaIDAccess access;
   private List<RaIDTitle> title;
+  private List<RaIDRelatedObject> relatedObject;
 
   public RaID(String identifier){
     this.identifier = new RaIDIdentifier(identifier);
