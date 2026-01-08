@@ -37,7 +37,7 @@ public class RaIDClientImpl implements RaIDClient {
   private static final String RELATED_OBJECT_NODE_NAME = "relatedObject";
 
   private RestTemplate restTemplate;
-  private ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper;
 
   public RaIDClientImpl() {
     restTemplate = new RestTemplate();
