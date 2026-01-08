@@ -14,6 +14,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.researchspace.raid.model.RaID;
 import com.researchspace.raid.model.RaIDIdentifier;
+import com.researchspace.raid.model.RaIDRelatedObject;
 import com.researchspace.raid.model.RaIDServicePoint;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -133,6 +134,78 @@ class RaIDClientTest {
     assertNotNull(raidUnique);
     assertEquals(rspaceRaid, raidUnique);
   }
+
+  @Test
+  public void updateRaidRelatedObject() throws IOException {
+    String oldRaidRSpaceJson = IOUtils.resourceToString("/json/raid-test-1.json",
+        Charset.defaultCharset());
+    RaID oldRspaceRaid = objectMapper.readValue(oldRaidRSpaceJson, RaID.class);
+    RaIDIdentifier rspaceRaidIdentifier = oldRspaceRaid.getIdentifier();
+
+    RaIDRelatedObject newRaIDRelatedObject = objectMapper.readValue(
+        IOUtils.resourceToString("/json/related-object-1.json", Charset.defaultCharset()),
+        RaIDRelatedObject.class);
+
+    String newRaidRSpaceJson = IOUtils.resourceToString("/json/raid-test-1-with-related-object.json",
+        Charset.defaultCharset());
+    RaID expectedNewRaid = objectMapper.readValue(newRaidRSpaceJson, RaID.class);
+
+    mockServer.expect(requestTo(endsWith("/raid/"
+            + rspaceRaidIdentifier.getPrefix() + "/"
+            + rspaceRaidIdentifier.getSuffix())))
+        .andExpect(method(HttpMethod.GET))
+        .andRespond(withSuccess(oldRaidRSpaceJson, MediaType.APPLICATION_JSON));
+
+    mockServer.expect(requestTo(endsWith("/raid/"
+            + rspaceRaidIdentifier.getPrefix() + "/"
+            + rspaceRaidIdentifier.getSuffix())))
+        .andExpect(content().json(newRaidRSpaceJson))
+        .andExpect(method(HttpMethod.PUT))
+        .andRespond(withSuccess(newRaidRSpaceJson, MediaType.APPLICATION_JSON));
+
+    // WHEN
+    RaID actualNewRaid = raidClient.updateRaIDRelatedObject(INSTANCE_BASE_URL, ACCESS_TOKEN,
+        rspaceRaidIdentifier.getPrefix(), rspaceRaidIdentifier.getSuffix(),
+        newRaIDRelatedObject.getId());
+
+    // THEN
+    assertNotNull(actualNewRaid);
+    assertEquals(expectedNewRaid, actualNewRaid);
+  }
+
+  @Test
+  public void clearRaidRelatedObject() throws IOException {
+    String oldRaidRSpaceJson = IOUtils.resourceToString("/json/raid-test-1-with-related-object.json",
+        Charset.defaultCharset());
+    RaID oldRspaceRaid = objectMapper.readValue(oldRaidRSpaceJson, RaID.class);
+    RaIDIdentifier rspaceRaidIdentifier = oldRspaceRaid.getIdentifier();
+
+    String newRaidRSpaceJson = IOUtils.resourceToString("/json/raid-test-1.json",
+        Charset.defaultCharset());
+    RaID expectedNewRaid = objectMapper.readValue(newRaidRSpaceJson, RaID.class);
+
+    mockServer.expect(requestTo(endsWith("/raid/"
+            + rspaceRaidIdentifier.getPrefix() + "/"
+            + rspaceRaidIdentifier.getSuffix())))
+        .andExpect(method(HttpMethod.GET))
+        .andRespond(withSuccess(oldRaidRSpaceJson, MediaType.APPLICATION_JSON));
+
+    mockServer.expect(requestTo(endsWith("/raid/"
+            + rspaceRaidIdentifier.getPrefix() + "/"
+            + rspaceRaidIdentifier.getSuffix())))
+        .andExpect(content().json(newRaidRSpaceJson))
+        .andExpect(method(HttpMethod.PUT))
+        .andRespond(withSuccess(newRaidRSpaceJson, MediaType.APPLICATION_JSON));
+
+    // WHEN
+    RaID actualNewRaid = raidClient.clearRaIDRelatedObject(INSTANCE_BASE_URL, ACCESS_TOKEN,
+        rspaceRaidIdentifier.getPrefix(), rspaceRaidIdentifier.getSuffix());
+
+    // THEN
+    assertNotNull(actualNewRaid);
+    assertEquals(expectedNewRaid, actualNewRaid);
+  }
+
 
   @Test
   public void testGetRedirectUriToConnect() throws URISyntaxException {
