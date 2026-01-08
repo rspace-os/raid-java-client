@@ -1,5 +1,6 @@
 package com.researchspace.raid.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -10,7 +11,8 @@ import com.researchspace.raid.model.RaIDServicePoint;
 import com.researchspace.raid.model.TestAccessToken;
 import java.net.URISyntaxException;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
+import java.util.Random;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -34,7 +36,7 @@ public class RaIDClientRealConnectionTest {
   private static final String CLIENT_SECRET = "___PASTE_CLIENT_SECRET___";
   private static final String REDIRECT_URI = "https://researchspace.eu.ngrok.io/apps/raid/callback";
   private static final String RAID_PREFIX = "10.83334";
-  private static final String RAID_SUFFIX = "c74980b1";
+  private static final String RAID_SUFFIX = "5b94e1cf";
   private static final Integer SERVICE_POINT_ID = 20000030;
 
   @Test
@@ -102,6 +104,34 @@ public class RaIDClientRealConnectionTest {
     RaID result = raidClientImpl.getRaID(API_BASE_URL, ACCESS_TOKEN, RAID_PREFIX,
         RAID_SUFFIX);
     assertNotNull(result);
+  }
+
+  @Test
+  @Order(7)
+  public void testUpdateRaidRelatedObject() {
+    Random rand = new Random();
+    // Obtain a number between [100 - 999].
+    int randomNumber = rand.nextInt(900) + 100;
+    String doiLink = "https://doi.org/10.70122/FK2/IQJ" + randomNumber;
+    System.out.println("Updating Raid " + RAID_PREFIX + "/" + RAID_SUFFIX +
+        " with the following DOI link: " + doiLink);
+    RaID result = raidClientImpl.updateRaIDRelatedObject(API_BASE_URL, ACCESS_TOKEN, RAID_PREFIX,
+        RAID_SUFFIX, doiLink);
+
+    assertNotNull(result);
+    assertEquals(1, result.getRelatedObject().size());
+    assertEquals(doiLink, result.getRelatedObject().get(0).getId());
+  }
+
+  @Test
+  @Order(8)
+  public void testClearRaidRelatedObject() {
+    System.out.println("Clearing Raid " + RAID_PREFIX + "/" + RAID_SUFFIX + " Related Objects");
+    RaID result = raidClientImpl.clearRaIDRelatedObject(API_BASE_URL, ACCESS_TOKEN, RAID_PREFIX,
+        RAID_SUFFIX);
+
+    assertNotNull(result);
+    assertEquals(0, result.getRelatedObject().size());
   }
 
 

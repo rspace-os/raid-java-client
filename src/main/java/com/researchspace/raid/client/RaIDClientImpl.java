@@ -3,7 +3,12 @@ package com.researchspace.raid.client;
 
 import static java.net.URLEncoder.encode;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.researchspace.raid.model.RaID;
+import com.researchspace.raid.model.RaIDRelatedObject;
 import com.researchspace.raid.model.RaIDServicePoint;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,10 +34,14 @@ import org.springframework.web.client.RestTemplate;
 @Data
 public class RaIDClientImpl implements RaIDClient {
 
+  private static final String RELATED_OBJECT_NODE_NAME = "relatedObject";
+
   private RestTemplate restTemplate;
+  private final ObjectMapper objectMapper;
 
   public RaIDClientImpl() {
     restTemplate = new RestTemplate();
+    objectMapper = new ObjectMapper();
   }
 
   @Override
@@ -75,14 +84,38 @@ public class RaIDClientImpl implements RaIDClient {
   @Override
   public RaID getRaID(String instanceBaseUrl, String accessToken, String raidPrefix,
       String raidSuffix) throws HttpServerErrorException {
-    return restTemplate
-        .exchange(
-            instanceBaseUrl + "/raid/" + raidPrefix + "/" + raidSuffix,
-            HttpMethod.GET,
-            new HttpEntity<>(createHttpHeaders(accessToken)),
-            RaID.class)
-        .getBody();
+    return getRaid(instanceBaseUrl, accessToken, raidPrefix, raidSuffix, RaID.class);
   }
+
+  @Override
+  public RaID updateRaIDRelatedObject(String apiBaseUrl, String accessToken, String raidPrefix,
+      String raidSuffix, String doiLink) throws HttpServerErrorException {
+    JsonNode rootNodeRaID = getRaid(apiBaseUrl, accessToken, raidPrefix, raidSuffix, JsonNode.class);
+
+    ObjectNode newRelatedObjectNode = objectMapper.valueToTree(new RaIDRelatedObject(doiLink));
+    // clear all RelatedObjects
+    ArrayNode existingRelatedObjArrayNode = clearRelatedObjects(rootNodeRaID);
+    // add RelatedObject
+    existingRelatedObjArrayNode.add(newRelatedObjectNode);
+    return updateRaID(apiBaseUrl, accessToken, raidPrefix, raidSuffix, rootNodeRaID);
+  }
+
+
+  public RaID clearRaIDRelatedObject(String apiBaseUrl, String accessToken, String raidPrefix,
+      String raidSuffix) throws HttpServerErrorException {
+    JsonNode rootNodeRaID = getRaid(apiBaseUrl, accessToken, raidPrefix, raidSuffix, JsonNode.class);
+
+    // clear RelatedObjects
+    clearRelatedObjects(rootNodeRaID);
+    return updateRaID(apiBaseUrl, accessToken, raidPrefix, raidSuffix, rootNodeRaID);
+  }
+
+  private ArrayNode clearRelatedObjects(JsonNode rootNodeRaID) {
+    ArrayNode existingRelatedObjArrayNode = (ArrayNode) rootNodeRaID.get(RELATED_OBJECT_NODE_NAME);
+    existingRelatedObjArrayNode.removeAll();
+    return existingRelatedObjArrayNode;
+  }
+
 
   @Override
   public String getRedirectUriToConnect(String authBaseUrl, String clientId, String redirectUri,
@@ -149,6 +182,27 @@ public class RaIDClientImpl implements RaIDClient {
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.add("Authorization", String.format("Bearer %s", accessToken));
     return headers;
+  }
+
+  private <T> T getRaid(String apiBaseUrl, String accessToken, String raidPrefix,
+      String raidSuffix, Class<T> wrapClass) throws HttpServerErrorException {
+    return restTemplate
+        .exchange(
+            apiBaseUrl + "/raid/" + raidPrefix + "/" + raidSuffix,
+            HttpMethod.GET,
+            new HttpEntity<>(createHttpHeaders(accessToken)),
+            wrapClass)
+        .getBody();
+  }
+
+  private RaID updateRaID(String apiBaseUrl, String accessToken, String raidPrefix, String raidSuffix,
+      JsonNode rootNodeRaID) {
+    HttpHeaders headers = createHttpHeaders(accessToken);
+    headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+    HttpEntity<String> request = new HttpEntity<>(rootNodeRaID.toString(), headers);
+
+    return restTemplate.exchange(apiBaseUrl + "/raid/" + raidPrefix + "/" + raidSuffix,
+        HttpMethod.PUT, request, RaID.class).getBody();
   }
 
 }

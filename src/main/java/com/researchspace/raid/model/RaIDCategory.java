@@ -11,9 +11,10 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RaIDType extends RaIDBriefIdentifier {
+public class RaIDCategory extends RaIDBriefIdentifier {
 
-  public RaIDType(String identifier, String schemaUri) {
+  public RaIDCategory(String identifier, String schemaUri) {
     super(identifier, schemaUri);
   }
+
 }

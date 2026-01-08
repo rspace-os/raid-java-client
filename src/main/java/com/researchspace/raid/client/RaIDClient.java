@@ -55,13 +55,43 @@ public interface RaIDClient {
    *
    * @param apiBaseUrl the API base URL of the RAiD instance
    * @param accessToken the api token associated to the user
-   * @param raidPrefix The RAiD prefix (i.e.: "10.33334")
-   * @param raidSuffix The RAiD suffix (i.e.: "c74980b1")
+   * @param raidPrefix The RAiD prefix (e.g.: "10.33334")
+   * @param raidSuffix The RAiD suffix (e.g.: "c74980b1")
    * @return data and metadata of a given RAiD
    * @throws HttpServerErrorException
    */
   RaID getRaID(String apiBaseUrl, String accessToken, String raidPrefix, String raidSuffix)
       throws HttpServerErrorException;
+
+
+  /***
+   * Calls the end point to update the RaID defined by {@param raidPrefix} and {@param raidSuffix}
+   * with a new Related Object built from the {@param doiLink}
+   *
+   * @param apiBaseUrl the API base URL of the RAiD instance
+   * @param accessToken the api token associated to the user
+   * @param raidPrefix The RAiD prefix (e.g.: "10.33334")
+   * @param raidSuffix The RAiD suffix (e.g.: "c74980b1")
+   * @param doiLink The link to the DOI
+   * @return the new updated RaID
+   * @throws HttpServerErrorException
+   */
+  RaID updateRaIDRelatedObject(String apiBaseUrl, String accessToken, String raidPrefix,
+      String raidSuffix, String doiLink) throws HttpServerErrorException;
+
+  /***
+   * Calls the end point to clear the Related Objects on the RaID defined by {@param raidPrefix}
+   * and {@param raidSuffix}
+   *
+   * @param apiBaseUrl the API base URL of the RAiD instance
+   * @param accessToken the api token associated to the user
+   * @param raidPrefix The RAiD prefix (e.g.: "10.33334")
+   * @param raidSuffix The RAiD suffix (e.g.: "c74980b1")
+   * @return the new updated RaID
+   * @throws HttpServerErrorException
+   */
+  RaID clearRaIDRelatedObject(String apiBaseUrl, String accessToken, String raidPrefix,
+      String raidSuffix) throws HttpServerErrorException;
 
   /***
    * Builds the URL used to redirect to the OAuth2.0 RAiD flow
