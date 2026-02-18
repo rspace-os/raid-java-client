@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>raid-java-client</artifactId>
-  <version>3.0.0</version>
+  <version>3.1.0</version>
 
   <parent>
     <groupId>com.github.rspace-os</groupId>
@@ -161,5 +161,4 @@
     <!-- lombok version compatible with java 17 -->
     <lombok.version>1.18.22</lombok.version>
   </properties>
-
 </project>

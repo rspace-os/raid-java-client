@@ -96,7 +96,22 @@
   "organisation": [],
   "subject": [],
   "relatedRaid": [],
-  "relatedObject": [],
+  "relatedObject": [
+    {
+      "id": "https://doi.org/10.5281/zenodo.18714232",
+      "schemaUri": "https://doi.org/",
+      "type": {
+        "id": "https://vocabulary.raid.org/relatedObject.type.schema/260",
+        "schemaUri": "https://vocabulary.raid.org/relatedObject.type.schema/329"
+      },
+      "category": [
+        {
+          "id": "https://vocabulary.raid.org/relatedObject.category.id/190",
+          "schemaUri": "https://vocabulary.raid.org/relatedObject.category.schemaUri/386"
+        }
+      ]
+    }
+  ],
   "alternateIdentifier": [],
   "spatialCoverage": []
 }

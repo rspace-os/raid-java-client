@@ -65,7 +65,7 @@ public interface RaIDClient {
 
 
   /***
-   * Calls the end point to update the RaID defined by {@param raidPrefix} and {@param raidSuffix}
+   * Calls the end point to add the RaID defined by {@param raidPrefix} and {@param raidSuffix}
    * with a new Related Object built from the {@param doiLink}
    *
    * @param apiBaseUrl the API base URL of the RAiD instance
@@ -76,7 +76,7 @@ public interface RaIDClient {
    * @return the new updated RaID
    * @throws HttpServerErrorException
    */
-  RaID updateRaIDRelatedObject(String apiBaseUrl, String accessToken, String raidPrefix,
+  RaID addRaIDRelatedObject(String apiBaseUrl, String accessToken, String raidPrefix,
       String raidSuffix, String doiLink) throws HttpServerErrorException;
 
   /***
