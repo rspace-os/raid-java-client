@@ -88,13 +88,13 @@ public class RaIDClientImpl implements RaIDClient {
   }
 
   @Override
-  public RaID updateRaIDRelatedObject(String apiBaseUrl, String accessToken, String raidPrefix,
+  public RaID addRaIDRelatedObject(String apiBaseUrl, String accessToken, String raidPrefix,
       String raidSuffix, String doiLink) throws HttpServerErrorException {
     JsonNode rootNodeRaID = getRaid(apiBaseUrl, accessToken, raidPrefix, raidSuffix, JsonNode.class);
 
     ObjectNode newRelatedObjectNode = objectMapper.valueToTree(new RaIDRelatedObject(doiLink));
     // clear all RelatedObjects
-    ArrayNode existingRelatedObjArrayNode = clearRelatedObjects(rootNodeRaID);
+    ArrayNode existingRelatedObjArrayNode = (ArrayNode) rootNodeRaID.get(RELATED_OBJECT_NODE_NAME);
     // add RelatedObject
     existingRelatedObjArrayNode.add(newRelatedObjectNode);
     return updateRaID(apiBaseUrl, accessToken, raidPrefix, raidSuffix, rootNodeRaID);
@@ -106,14 +106,10 @@ public class RaIDClientImpl implements RaIDClient {
     JsonNode rootNodeRaID = getRaid(apiBaseUrl, accessToken, raidPrefix, raidSuffix, JsonNode.class);
 
     // clear RelatedObjects
-    clearRelatedObjects(rootNodeRaID);
-    return updateRaID(apiBaseUrl, accessToken, raidPrefix, raidSuffix, rootNodeRaID);
-  }
-
-  private ArrayNode clearRelatedObjects(JsonNode rootNodeRaID) {
     ArrayNode existingRelatedObjArrayNode = (ArrayNode) rootNodeRaID.get(RELATED_OBJECT_NODE_NAME);
     existingRelatedObjArrayNode.removeAll();
-    return existingRelatedObjArrayNode;
+
+    return updateRaID(apiBaseUrl, accessToken, raidPrefix, raidSuffix, rootNodeRaID);
   }
 
 

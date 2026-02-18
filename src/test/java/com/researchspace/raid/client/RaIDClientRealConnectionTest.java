@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.researchspace.raid.model.RaID;
+import com.researchspace.raid.model.RaIDRelatedObject;
 import com.researchspace.raid.model.RaIDServicePoint;
 import com.researchspace.raid.model.TestAccessToken;
 import java.net.URISyntaxException;
@@ -108,30 +109,44 @@ public class RaIDClientRealConnectionTest {
 
   @Test
   @Order(7)
-  public void testUpdateRaidRelatedObject() {
-    Random rand = new Random();
-    // Obtain a number between [100 - 999].
-    int randomNumber = rand.nextInt(900) + 100;
-    String doiLink = "https://doi.org/10.70122/FK2/IQJ" + randomNumber;
-    System.out.println("Updating Raid " + RAID_PREFIX + "/" + RAID_SUFFIX +
-        " with the following DOI link: " + doiLink);
-    RaID result = raidClientImpl.updateRaIDRelatedObject(API_BASE_URL, ACCESS_TOKEN, RAID_PREFIX,
-        RAID_SUFFIX, doiLink);
+  public void testClearAndAddTwoNewRelatedObjects() {
+    RaID raidResult;
+    try {
+      //GIVEN
+      Random rand = new Random();
+      // Obtain a number between [100 - 999].
+      int randomNumber = rand.nextInt(900) + 100;
+      String doiLink1 = "https://doi.org/10.70122/FK2/AAA" + randomNumber;
+      String doiLink2 = "https://doi.org/10.70122/FK2/BBB" + randomNumber;
 
-    assertNotNull(result);
-    assertEquals(1, result.getRelatedObject().size());
-    assertEquals(doiLink, result.getRelatedObject().get(0).getId());
-  }
+      raidResult = raidClientImpl.clearRaIDRelatedObject(API_BASE_URL, ACCESS_TOKEN, RAID_PREFIX,
+          RAID_SUFFIX);
+      assertNotNull(raidResult);
+      assertEquals(0, raidResult.getRelatedObject().size());
 
-  @Test
-  @Order(8)
-  public void testClearRaidRelatedObject() {
-    System.out.println("Clearing Raid " + RAID_PREFIX + "/" + RAID_SUFFIX + " Related Objects");
-    RaID result = raidClientImpl.clearRaIDRelatedObject(API_BASE_URL, ACCESS_TOKEN, RAID_PREFIX,
-        RAID_SUFFIX);
+      // WHEN
+      System.out.println("Adding Raid " + RAID_PREFIX + "/" + RAID_SUFFIX +
+          " with the following DOI link: " + doiLink1);
+      raidClientImpl.addRaIDRelatedObject(API_BASE_URL, ACCESS_TOKEN, RAID_PREFIX,
+          RAID_SUFFIX, doiLink1);
+      System.out.println("Adding Raid " + RAID_PREFIX + "/" + RAID_SUFFIX +
+          " with the following DOI link: " + doiLink2);
+      raidResult = raidClientImpl.addRaIDRelatedObject(API_BASE_URL, ACCESS_TOKEN, RAID_PREFIX,
+          RAID_SUFFIX, doiLink2);
 
-    assertNotNull(result);
-    assertEquals(0, result.getRelatedObject().size());
+      // THEN
+      assertNotNull(raidResult);
+      assertEquals(2, raidResult.getRelatedObject().size());
+      assertTrue(raidResult.getRelatedObject().contains(new RaIDRelatedObject(doiLink1)));
+      assertTrue(raidResult.getRelatedObject().contains(new RaIDRelatedObject(doiLink2)));
+
+    } finally {
+      // THEN
+      raidResult = raidClientImpl.clearRaIDRelatedObject(API_BASE_URL, ACCESS_TOKEN, RAID_PREFIX,
+          RAID_SUFFIX);
+      assertNotNull(raidResult);
+      assertEquals(0, raidResult.getRelatedObject().size());
+    }
   }
 
 

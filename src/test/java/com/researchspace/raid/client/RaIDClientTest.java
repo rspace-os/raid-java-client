@@ -164,7 +164,7 @@ class RaIDClientTest {
         .andRespond(withSuccess(newRaidRSpaceJson, MediaType.APPLICATION_JSON));
 
     // WHEN
-    RaID actualNewRaid = raidClient.updateRaIDRelatedObject(INSTANCE_BASE_URL, ACCESS_TOKEN,
+    RaID actualNewRaid = raidClient.addRaIDRelatedObject(INSTANCE_BASE_URL, ACCESS_TOKEN,
         rspaceRaidIdentifier.getPrefix(), rspaceRaidIdentifier.getSuffix(),
         newRaIDRelatedObject.getId());
 
