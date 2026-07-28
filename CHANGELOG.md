@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.0.0]
+- Spring 6 / Jakarta migration (RSDEV-444)
+- Upgrade to rspace-parent 3.0.0
+
 ## [3.1.0]
 - Adding RelatedObjects section with DOI rather than just update it
 
