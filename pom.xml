@@ -10,7 +10,7 @@
   <parent>
     <groupId>com.github.rspace-os</groupId>
     <artifactId>rspace-parent</artifactId>
-    <version>3.0.0</version>
+    <version>314e7a9f6f729d219c4157c73dffd8314233de82</version>
   </parent>
 
   <repositories>
@@ -130,7 +130,6 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
-      <version>5.8.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -148,7 +147,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>RELEASE</version>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
